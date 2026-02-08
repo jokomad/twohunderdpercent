@@ -24,6 +24,7 @@ function sendTelegramMessage(message) {
         hostname: 'api.telegram.org',
         path: `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
         method: 'POST',
+        family: 4, // Force IPv4 to prevent ETIMEDOUT on IPv6-enabled environments like Koyeb
         headers: {
             'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(postData)
@@ -86,7 +87,7 @@ async function checkPriceChangeAlerts() {
         const alertPairs = tickerData.filter(ticker => {
             const priceChange = parseFloat(ticker.priceChangePercent || 0);
             // Only alert if > 200% (positive only) AND not already sent today
-            return priceChange > 2 && !sentData.symbols.includes(ticker.symbol);
+            return priceChange > 200 && !sentData.symbols.includes(ticker.symbol);
         });
 
         if (alertPairs.length > 0) {
@@ -120,6 +121,7 @@ async function fetch24hTickerData() {
             hostname: 'fapi.binance.com',
             path: '/fapi/v1/ticker/24hr',
             method: 'GET',
+            family: 4, // Force IPv4
             headers: {
                 'User-Agent': 'Node.js'
             }
@@ -190,4 +192,3 @@ server.listen(PORT, () => {
     console.log('Starting 24h Price Change Alerter - runs every 10 seconds');
     scheduleScans();
 });
-
