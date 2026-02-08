@@ -86,7 +86,7 @@ async function checkPriceChangeAlerts() {
         const alertPairs = tickerData.filter(ticker => {
             const priceChange = parseFloat(ticker.priceChangePercent || 0);
             // Only alert if > 200% (positive only) AND not already sent today
-            return priceChange > 200 && !sentData.symbols.includes(ticker.symbol);
+            return priceChange > 2 && !sentData.symbols.includes(ticker.symbol);
         });
 
         if (alertPairs.length > 0) {
@@ -190,3 +190,4 @@ server.listen(PORT, () => {
     console.log('Starting 24h Price Change Alerter - runs every 10 seconds');
     scheduleScans();
 });
+
